@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    .page-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 6px;
+    }
+
+    .page-subtitle {
+        color: #8ea4bd;
+        font-size: 14px;
+        margin-bottom: 24px;
+    }
+
+    .section-card {
+        background: #0d1b2e;
+        border: 1px solid #1d3554;
+        border-radius: 10px;
+        padding: 22px;
+        box-shadow: 0 0 18px rgba(0, 212, 255, 0.05);
+        margin-bottom: 20px;
+    }
+
+    .section-title {
+        font-size: 14px;
+        color: #ffffff;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 16px;
+        font-weight: 700;
+    }
+
+    .table {
+        color: #dce8f5;
+        margin-bottom: 0;
+    }
+
+    .table thead {
+        background: #081421;
+    }
+
+    .table thead th {
+        border-bottom: 1px solid #1d3554;
+        color: #8ea4bd;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .table tbody tr {
+        border-bottom: 1px solid #132a44;
+    }
+
+    .table tbody tr:hover {
+        background: #0f2942;
+    }
+
+    .table td {
+        font-size: 14px;
+        vertical-align: middle;
+    }
+
+    .badge-threat {
+        background: #ff4d6d;
+        color: white;
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+    }
+
+    .badge-safe {
+        background: #06d6a0;
+        color: black;
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+    }
+
+    .btn-cyber {
+        background: #00d4ff;
+        border: none;
+        color: black;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 10px 18px;
+        transition: 0.25s;
+    }
+
+    .btn-cyber:hover {
+        background: #00a8cc;
+        color: white;
+    }
+
+    .btn-upload {
+        background: #ffb703;
+        border: none;
+        color: black;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 10px 18px;
+    }
+
+    .btn-upload:hover {
+        background: #e09e00;
+    }
+
+    .input-file {
+        background: #081421;
+        border: 1px solid #1d3554;
+        color: #dce8f5;
+    }
+
+    .mini-text {
+        color: #8ea4bd;
+        font-size: 13px;
+        margin-top: 10px;
+    }
+</style>
+
+<div class="page-title">Dataset Management</div>
+<div class="page-subtitle">
+    View and manage detected posts stored in the system database.
+</div>
+
+<!-- CURRENT DATA -->
+<div class="section-card">
+
+    <div class="section-title">Current Dataset</div>
+
+    <p class="mini-text">
+        Total Records: <b id="total"></b>
+    </p>
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Post</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody id="table"></tbody>
+        </table>
+    </div>
+
+    <div class="text-center mt-3">
+        <button class="btn-cyber" onclick="loadMore()">Load More</button>
+    </div>
+
+</div>
+
+<!-- UPLOAD SECTION -->
+<div class="section-card">
+
+    <div class="section-title">Upload New Dataset</div>
+
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" class="form-control input-file mb-3" required>
+
+        <button class="btn-upload">Upload & Auto Label</button>
+    </form>
+
+    <p class="mini-text">
+        Uploaded dataset will be automatically processed and stored in the database.
+    </p>
+
+</div>
+
+<script>
+let page = 1;
+
+function loadMore(){
+
+fetch('/dataset-data?page=' + page)
+.then(r => r.json())
+.then(d => {
+
+document.getElementById("total").innerText = d.total;
+
+let html = "";
+
+d.data.forEach(x => {
+
+let statusBadge = x.threat_status === "threat"
+    ? `<span class="badge-threat">Threat</span>`
+    : `<span class="badge-safe">Safe</span>`;
+
+html += `
+<tr>
+<td>${x.post}</td>
+<td>${x.predicted_label}</td>
+<td>${statusBadge}</td>
+</tr>
+`;
+
+});
+
+document.getElementById("table").innerHTML += html;
+page++;
+
+});
+
+}
+
+loadMore();
+</script>
+
+{% endblock %}

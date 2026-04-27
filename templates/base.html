@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cyber Threat System</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #07111f;
+            color: #dce8f5;
+            font-family: Arial, sans-serif;
+        }
+
+        .sidebar {
+            width: 230px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: #081421;
+            border-right: 1px solid #1d3554;
+            padding: 18px 12px;
+            overflow-y: auto;
+        }
+
+        .brand {
+            color: #00d4ff;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 28px;
+            padding-left: 8px;
+        }
+
+        .brand span {
+            color: #ffffff;
+        }
+
+        .nav-link-custom {
+            display: block;
+            color: #b8c7d9;
+            padding: 12px 14px;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            font-size: 15px;
+            transition: 0.25s ease;
+        }
+
+        .nav-link-custom:hover {
+            background: #0f2942;
+            color: #ffffff;
+            box-shadow: inset 3px 0 0 #00d4ff;
+        }
+
+        .nav-icon {
+            margin-right: 10px;
+            color: #00d4ff;
+        }
+
+        .topbar {
+            height: 64px;
+            position: fixed;
+            left: 230px;
+            right: 0;
+            top: 0;
+            background: #081421;
+            border-bottom: 1px solid #1d3554;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 10;
+        }
+
+        .search-area {
+            position: relative;
+            width: 420px;
+            max-width: 55vw;
+        }
+
+        .search-box {
+            width: 100%;
+            background: #0d1b2e;
+            border: 1px solid #1d3554;
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #dce8f5;
+            outline: none;
+        }
+
+        .search-box::placeholder {
+            color: #70879f;
+        }
+
+        .search-box:focus {
+            border-color: #00d4ff;
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.12);
+        }
+
+        .search-results {
+            display: none;
+            position: absolute;
+            top: 48px;
+            left: 0;
+            right: 0;
+            background: #0d1b2e;
+            border: 1px solid #1d3554;
+            border-radius: 10px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+            max-height: 360px;
+            overflow-y: auto;
+            z-index: 99;
+        }
+
+        .search-item {
+            padding: 12px 14px;
+            border-bottom: 1px solid #1d3554;
+            cursor: pointer;
+        }
+
+        .search-item:hover {
+            background: #0f2942;
+        }
+
+        .search-post {
+            color: #ffffff;
+            font-size: 14px;
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        .search-meta {
+            font-size: 12px;
+            color: #8ea4bd;
+        }
+
+        .search-badge-threat {
+            color: #ff4d6d;
+            font-weight: bold;
+        }
+
+        .search-badge-safe {
+            color: #06d6a0;
+            font-weight: bold;
+        }
+
+        .search-empty {
+            padding: 14px;
+            color: #8ea4bd;
+            font-size: 14px;
+        }
+
+        .topbar-icons {
+            display: flex;
+            gap: 16px;
+            color: #b8c7d9;
+            font-size: 18px;
+        }
+
+        .main {
+            margin-left: 230px;
+            padding: 88px 24px 30px;
+            min-height: 100vh;
+            background: #07111f;
+        }
+
+        .cyber-panel {
+            background: #0d1b2e;
+            border: 1px solid #1d3554;
+            border-radius: 10px;
+            box-shadow: 0 0 18px rgba(0, 212, 255, 0.05);
+        }
+
+        .card-box {
+            padding: 20px;
+            border-radius: 12px;
+            color: white;
+            margin-bottom: 15px;
+            background: #0d1b2e;
+            border: 1px solid #1d3554;
+        }
+
+        .blue,
+        .yellow,
+        .red,
+        .green {
+            background: #0d1b2e !important;
+            border: 1px solid #1d3554;
+            color: #dce8f5 !important;
+        }
+
+        .text-muted-cyber {
+            color: #8ea4bd;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .topbar {
+                left: 200px;
+            }
+
+            .main {
+                margin-left: 200px;
+            }
+
+            .search-area {
+                width: 260px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="sidebar">
+    <div class="brand">Open<span>CTI</span></div>
+
+    <a class="nav-link-custom" href="/">
+        <span class="nav-icon">▦</span> Home
+    </a>
+
+    <a class="nav-link-custom" href="/dataset">
+        <span class="nav-icon">▤</span> Dataset
+    </a>
+
+    <a class="nav-link-custom" href="/pipeline">
+        <span class="nav-icon">⇄</span> Pipeline
+    </a>
+
+    <a class="nav-link-custom" href="/alert">
+        <span class="nav-icon">⚠</span> Alert
+    </a>
+
+    <a class="nav-link-custom" href="/feedback">
+        <span class="nav-icon">✎</span> Feedback
+    </a>
+</div>
+
+<div class="topbar">
+    <div class="search-area">
+        <input
+            class="search-box"
+            id="globalSearch"
+            type="text"
+            placeholder="Search posts, labels, or status..."
+            autocomplete="off"
+            onkeyup="searchPlatform()"
+        >
+
+        <div class="search-results" id="searchResults"></div>
+    </div>
+
+    <div class="topbar-icons">
+        <span>⟳</span>
+        <span>🔔</span>
+        <span>▦</span>
+        <span>☻</span>
+    </div>
+</div>
+
+<div class="main">
+    {% block content %}{% endblock %}
+</div>
+
+<script>
+let searchTimer = null;
+
+function searchPlatform() {
+    clearTimeout(searchTimer);
+
+    searchTimer = setTimeout(() => {
+        const q = document.getElementById("globalSearch").value.trim();
+        const box = document.getElementById("searchResults");
+
+        if (q.length === 0) {
+            box.style.display = "none";
+            box.innerHTML = "";
+            return;
+        }
+
+        fetch("/search?q=" + encodeURIComponent(q))
+            .then(response => response.json())
+            .then(data => {
+                box.innerHTML = "";
+
+                if (data.length === 0) {
+                    box.innerHTML = `<div class="search-empty">No results found.</div>`;
+                    box.style.display = "block";
+                    return;
+                }
+
+                data.forEach(item => {
+                    const statusClass = item.threat_status === "threat"
+                        ? "search-badge-threat"
+                        : "search-badge-safe";
+
+                    const div = document.createElement("div");
+                    div.className = "search-item";
+
+                    div.innerHTML = `
+                        <div class="search-post">${item.post}</div>
+                        <div class="search-meta">
+                            Label: <strong>${item.predicted_label}</strong>
+                            &nbsp; | &nbsp;
+                            Status: <span class="${statusClass}">${item.threat_status}</span>
+                        </div>
+                    `;
+
+                    box.appendChild(div);
+                });
+
+                box.style.display = "block";
+            })
+            .catch(() => {
+                box.innerHTML = `<div class="search-empty">Search error. Check database connection.</div>`;
+                box.style.display = "block";
+            });
+    }, 250);
+}
+
+document.addEventListener("click", function(event) {
+    const searchArea = document.querySelector(".search-area");
+    const box = document.getElementById("searchResults");
+
+    if (!searchArea.contains(event.target)) {
+        box.style.display = "none";
+    }
+});
+</script>
+
+</body>
+</html>

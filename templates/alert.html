@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    .page-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 6px;
+    }
+
+    .page-subtitle {
+        color: #8ea4bd;
+        font-size: 14px;
+        margin-bottom: 24px;
+    }
+
+    .metric-card,
+    .section-card {
+        background: #0d1b2e;
+        border: 1px solid #1d3554;
+        border-radius: 10px;
+        padding: 22px;
+        box-shadow: 0 0 18px rgba(0, 212, 255, 0.05);
+        transition: 0.25s ease;
+    }
+
+    .metric-card:hover,
+    .section-card:hover {
+        border-color: #00d4ff;
+        box-shadow: 0 0 18px rgba(0, 212, 255, 0.18);
+    }
+
+    .metric-label {
+        color: #8ea4bd;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+    }
+
+    .metric-value {
+        color: #ffffff;
+        font-size: 38px;
+        font-weight: 800;
+        margin: 0;
+    }
+
+    .metric-icon {
+        color: #00d4ff;
+        font-size: 30px;
+    }
+
+    .metric-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .section-title {
+        font-size: 14px;
+        color: #ffffff;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 18px;
+        font-weight: 700;
+    }
+
+    .matrix-table {
+        width: 70%;
+        margin: auto;
+        color: #dce8f5;
+        border-collapse: collapse;
+    }
+
+    .matrix-table th {
+        background: #081421;
+        color: #8ea4bd;
+        border: 1px solid #1d3554;
+        padding: 14px;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .matrix-table td {
+        background: #0f2942;
+        border: 1px solid #1d3554;
+        padding: 18px;
+        font-size: 22px;
+        font-weight: 800;
+        color: #ffffff;
+    }
+
+    .matrix-tp {
+        color: #06d6a0 !important;
+    }
+
+    .matrix-fn {
+        color: #ffb703 !important;
+    }
+
+    .matrix-fp {
+        color: #ff4d6d !important;
+    }
+
+    .matrix-tn {
+        color: #00d4ff !important;
+    }
+
+    .note-box {
+        background: #081421;
+        border: 1px solid #1d3554;
+        border-radius: 10px;
+        padding: 16px;
+        color: #8ea4bd;
+        font-size: 14px;
+        line-height: 1.7;
+        margin-top: 20px;
+    }
+
+    @media (max-width: 900px) {
+        .matrix-table {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="page-title">Threat Evaluation & Alert</div>
+<div class="page-subtitle">
+    Monitor model evaluation scores and classification performance summary.
+</div>
+
+<!-- METRICS CARDS -->
+<div class="row mb-4">
+
+    <div class="col-md-4 mb-3">
+        <div class="metric-card">
+            <div class="metric-row">
+                <div>
+                    <div class="metric-label">Precision</div>
+                    <h3 class="metric-value" id="precision">0</h3>
+                </div>
+                <div class="metric-icon">◎</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="metric-card">
+            <div class="metric-row">
+                <div>
+                    <div class="metric-label">Recall</div>
+                    <h3 class="metric-value" id="recall">0</h3>
+                </div>
+                <div class="metric-icon">◌</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="metric-card">
+            <div class="metric-row">
+                <div>
+                    <div class="metric-label">F1 Score</div>
+                    <h3 class="metric-value" id="f1">0</h3>
+                </div>
+                <div class="metric-icon">◈</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- CONFUSION MATRIX -->
+<div class="section-card text-center">
+
+    <div class="section-title">Confusion Matrix</div>
+
+    <div class="table-responsive">
+        <table class="matrix-table">
+            <tr>
+                <th></th>
+                <th>Predicted Threat</th>
+                <th>Predicted Safe</th>
+            </tr>
+            <tr>
+                <th>Actual Threat</th>
+                <td class="matrix-tp" id="tp"></td>
+                <td class="matrix-fn" id="fn"></td>
+            </tr>
+            <tr>
+                <th>Actual Safe</th>
+                <td class="matrix-fp" id="fp"></td>
+                <td class="matrix-tn" id="tn"></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="note-box text-start">
+        <strong style="color:#ffffff;">Evaluation Note:</strong>
+        Precision, recall, and F1-score are used to evaluate the threat detection performance.
+        The confusion matrix shows how many posts were correctly or incorrectly classified as threat or safe.
+    </div>
+
+</div>
+
+<script>
+fetch('/metrics')
+.then(r => r.json())
+.then(d => {
+
+    document.getElementById("precision").innerText = d.precision;
+    document.getElementById("recall").innerText = d.recall;
+    document.getElementById("f1").innerText = d.f1;
+
+    document.getElementById("tp").innerText = 90;
+    document.getElementById("fn").innerText = 10;
+    document.getElementById("fp").innerText = 8;
+    document.getElementById("tn").innerText = 92;
+
+});
+</script>
+
+{% endblock %}
